@@ -1,0 +1,11 @@
+project 'YANScrollMenu.xcodeproj'
+inhibit_all_warnings!
+
+platform :ios, '8.0'
+
+target 'YANScrollMenu' do
+
+pod 'SDWebImage', '3.8.2' #图片(4.0 版本后不能播放gif)
+pod 'Masonry'          #布局
+
+end
