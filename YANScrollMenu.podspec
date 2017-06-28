@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "YANScrollMenu"
-  s.version      = "0.9.1"
+  s.version      = "0.9.0"
   s.summary      = " A scroll menu similar to MeiTuan"
 
   # This description is used to generate tags and improve search results.
