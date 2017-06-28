@@ -7,8 +7,8 @@
 //
 
 #import "YANScrollMenu.h"
-#import <Masonry.h>
-#import <UIImageView+WebCache.h>
+#import "Masonry.h"
+#import "UIImageView+WebCache.h"
 
 /**********************  YANMenuObject ***************************/
 @implementation YANMenuObject
