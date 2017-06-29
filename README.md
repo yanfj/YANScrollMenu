@@ -1,16 +1,15 @@
 # YANScrollMenu
 
-[![License MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://github.com/yanff/YANScrollMenu/blob/master/LICENSE)
-[![CocoaPods](http://img.shields.io/cocoapods/v/YANScrollMenu.svg?style=flat)](http://cocoapods.org/?q= YANScrollMenu)
-[![CocoaPods](http://img.shields.io/cocoapods/p/YANScrollMenu.svg?style=flat)](http://cocoapods.org/?q= YANScrollMenu)
+[![License MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://github.com/yanff/YANScrollMenu/blob/master/LICENSE)[![CocoaPods](http://img.shields.io/cocoapods/v/YANScrollMenu.svg?style=flat)](http://cocoapods.org/?q= YANScrollMenu)[![CocoaPods](http://img.shields.io/cocoapods/p/YANScrollMenu.svg?style=flat)](http://cocoapods.org/?q= YANScrollMenu)
 
 ![GIF](https://github.com/yanff/YANScrollMenu/blob/master/YANScrollMenu.gif)
 
-##Requirements
+###Requirements
 * ARC
 * iOS 8.0+
 
-##Cocoapods
+###Cocoapods
+
 `YANScrollMenu` is available via [Cocoapods](http://cocoapods.org/), add this line in your podfile :
  ```
     pod 'YANScrollMenu', '~> 0.9.0'
@@ -46,17 +45,19 @@
    - (YANEdgeInsets)edgeInsetsOfItemInScrollMenu:(YANScrollMenu *)scrollMenu;
    ```
 
-##Dependency
+###Dependency
 
 YANScrollMenu depend on  `SDWebImage` and  `Masonry`
 * When the version of  `SDWebImage` large than `3.8.2` , gif will not be supported.
 
-##Release Notes
+###Release Notes
+==============
 V 0.9.0   The first version
 
-##License
+###License
+==============
 YANScrollMenu is released under the MIT license. See LICENSE file for details.
 
-##Contact
+###Contact
 
 Any suggestion or question? Please create a Github issue .
