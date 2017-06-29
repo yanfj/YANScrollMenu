@@ -10,32 +10,105 @@
 #import "YANScrollMenu.h"
 
 #define ItemHeight 90
+#define IMG(name)           [UIImage imageNamed:name]
 
 @interface TableViewController ()<YANScrollMenuProtocol>{
     
-    NSUInteger number;
     NSInteger row;
     NSInteger item;
 }
 
 @property (nonatomic, strong) YANScrollMenu *menu;
+/**
+ *  dataSource
+ */
+@property (nonatomic, strong) NSMutableArray<YANMenuObject *> *dataSource;
 @end
 
 @implementation TableViewController
+- (NSMutableArray<YANMenuObject *> *)dataSource{
+    if (_dataSource == nil) {
+        _dataSource = [NSMutableArray array];
+    }
+    return _dataSource;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    row = 2;
-    item = 4;
-    number = 15;
+    row = 0;
+    item = 0;
+    
+    [self prepareUI];
+    
+    //GCD
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        
+        [self createData];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [self reload:self.navigationItem.rightBarButtonItem];
+            
+        });
+    });
+    
+
+}
+#pragma mark - Prepare UI
+- (void)prepareUI{
     
     self.menu = [[YANScrollMenu alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, ItemHeight*row + kPageControlHeight)];
+    self.menu.currentPageIndicatorTintColor = [UIColor colorWithRed:107/255.f green:191/255.f blue:255/255.f alpha:1.0];
     self.menu.delegate = self;
     self.tableView.tableHeaderView = self.menu;
     self.tableView.tableFooterView = [UIView new];
     
     [YANMenuItem appearance].textFont = [UIFont systemFontOfSize:12];
-    [YANMenuItem appearance].textColor = [UIColor colorWithRed:128/255.f green:191/255.f blue:255/255.f alpha:1.0];
+    [YANMenuItem appearance].textColor = [UIColor colorWithRed:51/255.f green:51/255.f blue:51/255.f alpha:1.0];
+    
+}
+#pragma mark -  Data
+- (void)createData{
+    
+    
+    NSArray *images = @[IMG(@"icon_cate"),
+                        IMG(@"icon_drinks"),
+                        IMG(@"icon_movie"),
+                        IMG(@"icon_recreation"),
+                        IMG(@"icon_stay"),
+                        IMG(@"icon_ traffic"),
+                        IMG(@"icon_ scenic"),
+                        IMG(@"icon_fitness"),
+                        IMG(@"icon_fitment"),
+                        IMG(@"icon_hairdressing"),
+                        IMG(@"icon_mom"),
+                        IMG(@"icon_study"),
+                        IMG(@"icon_travel"),
+                        @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498711713465&di=d986d7003deaae41342dd9885c117e38&imgtype=0&src=http%3A%2F%2Fs9.rr.itc.cn%2Fr%2FwapChange%2F20168_3_0%2Fa86hlk59412347762310.GIF"];
+    NSArray *titles = @[@"美食",
+                        @"休闲娱乐",
+                        @"电影/演出",
+                        @"KTV",
+                        @"酒店住宿",
+                        @"火车票/机票",
+                        @"旅游景点",
+                        @"运动健身",
+                        @"家装建材",
+                        @"美容美发",
+                        @"母婴",
+                        @"学习培训",
+                        @"旅游出行",
+                        @"动态图\n从网络获取"];
+    
+    for (NSUInteger idx = 0; idx< images.count; idx ++) {
+        
+        YANMenuObject *object = [YANMenuObject objectWithText:titles[idx] image:images[idx] placeholderImage:IMG(@"placeholder")];
+        
+        [self.dataSource addObject:object];
+        
+    }
+    
+    
 }
 #pragma mark - YANScrollMenuProtocol
 - (NSUInteger)numberOfRowsForEachPageInScrollMenu:(YANScrollMenu *)scrollMenu{
@@ -48,54 +121,20 @@
 }
 - (NSUInteger)numberOfMenusInScrollMenu:(YANScrollMenu *)scrollMenu{
     
-    return number;
+    return self.dataSource.count;
 }
 - (YANMenuObject *)scrollMenu:(YANScrollMenu *)scrollMenu objectAtIndexPath:(NSIndexPath *)indexPath{
     
-    YANMenuObject *object = [[YANMenuObject alloc] init];
+    NSUInteger idx = indexPath.section * item + indexPath.row;
     
-    if (indexPath.section %2 == 0) {
-        
-        object.text = @"xxx";
-        
-    }else{
-        
-        if (indexPath.row % 3 == 1) {
-            object.text = @"oooo\nxxxx";
-        }else if (indexPath.row % 3 == 2){
-            object.text = @"xxxxxxxxoooooooo";
-        }
-        else{
-            
-            object.text = @"oooo";
-        }
-
-    }
-    
-    if (indexPath.row %2 == 0) {
-        
-        if (indexPath.row % 3 == 1) {
-             object.image = @"http://opd9rhjcu.bkt.clouddn.com/FnCMc1jANXqvmpi_pJt-rT3bkAT6";
-        }else if(indexPath.row % 3 == 2){
-            NSString *urlStr = @"http://wx.qlogo.cn/mmopen/sK29NB5SsTTlgdlCNUpm2xOjnlHjyoR9cyt1HLWsicbZxVAP89HnetPJ7bjdnryqibXh30TmIAb8rRoDJzsG8DF30KskagQ9Q8/0";
-            object.image = [NSURL URLWithString:urlStr];
-        }else{
-            object.image = [UIImage imageNamed:@"IMG_0648.JPG"];
-            
-        }
-       
-    }else{
-        
-
-        object.image = @"http://i3.17173cdn.com/2fhnvk/YWxqaGBf/cms3/AocYbrbknfDxhCD.gif";
-    }
-    
-    return object;
+    return self.dataSource[idx];
 }
 
 - (void)scrollMenu:(YANScrollMenu *)scrollMenu didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     
-    NSString *tips = [NSString stringWithFormat:@"tap item at indexPath:[%ld - %ld]",indexPath.section,indexPath.row];
+    NSUInteger idx = indexPath.section * item + indexPath.row;
+    
+    NSString *tips = [NSString stringWithFormat:@"IndexPath: [ %ld - %ld ]\nTitle:   %@",indexPath.section,indexPath.row,self.dataSource[idx].text];
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Tips" message:tips preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
@@ -107,7 +146,7 @@
 }
 - (YANEdgeInsets)edgeInsetsOfItemInScrollMenu:(YANScrollMenu *)scrollMenu{
     
-    return YANEdgeInsetsMake(kScale(5), 0, kScale(5), 0, kScale(5));
+    return YANEdgeInsetsMake(kScale(10), 0, kScale(5), 0, kScale(5));
 }
 - (IBAction)reload:(id)sender {
     
@@ -128,31 +167,26 @@
         case 0:{
             row = 1;
             item = 5;
-            number = 4;
         }
             break;
         case 1:{
             row = 2;
-            item = 5;
-            number = 9;
+            item = 4;
         }
             break;
         case 2:{
             row = 2;
             item = 5;
-            number = 13;
         }
             break;
         case 3:{
             row = 3;
             item = 4;
-            number = 11;
         }
             break;
         case 4:{
             row = 3;
             item = 5;
-            number = 16;
         }
             break;
         default:

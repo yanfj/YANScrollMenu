@@ -14,7 +14,6 @@
 		2C92751E1F03546800B4BD83 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C92751C1F03546800B4BD83 /* LaunchScreen.storyboard */; };
 		2C9275281F0355D800B4BD83 /* YANScrollMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C9275271F0355D800B4BD83 /* YANScrollMenu.m */; };
 		2C9275321F03C2A900B4BD83 /* TableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C9275311F03C2A900B4BD83 /* TableViewController.m */; };
-		2CD155C61F03D65C00819119 /* IMG_0648.JPG in Resources */ = {isa = PBXBuildFile; fileRef = 2CD155C51F03D65C00819119 /* IMG_0648.JPG */; };
 		BDCB2042E76D787A9A738A6C /* libPods-YANScrollMenu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B57642B05DF3A4ADE2880585 /* libPods-YANScrollMenu.a */; };
 /* End PBXBuildFile section */
 
@@ -31,7 +30,6 @@
 		2C9275271F0355D800B4BD83 /* YANScrollMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YANScrollMenu.m; sourceTree = "<group>"; };
 		2C9275301F03C2A900B4BD83 /* TableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewController.h; sourceTree = "<group>"; };
 		2C9275311F03C2A900B4BD83 /* TableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewController.m; sourceTree = "<group>"; };
-		2CD155C51F03D65C00819119 /* IMG_0648.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = IMG_0648.JPG; sourceTree = "<group>"; };
 		991596F755069A0351810BA2 /* Pods-YANScrollMenu.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YANScrollMenu.debug.xcconfig"; path = "Pods/Target Support Files/Pods-YANScrollMenu/Pods-YANScrollMenu.debug.xcconfig"; sourceTree = "<group>"; };
 		B0EA70148969C7C641F3CCF8 /* Pods-YANScrollMenu.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YANScrollMenu.release.xcconfig"; path = "Pods/Target Support Files/Pods-YANScrollMenu/Pods-YANScrollMenu.release.xcconfig"; sourceTree = "<group>"; };
 		B57642B05DF3A4ADE2880585 /* libPods-YANScrollMenu.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-YANScrollMenu.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -76,7 +74,6 @@
 				2C9275301F03C2A900B4BD83 /* TableViewController.h */,
 				2C9275311F03C2A900B4BD83 /* TableViewController.m */,
 				2C9275171F03546800B4BD83 /* Main.storyboard */,
-				2CD155C51F03D65C00819119 /* IMG_0648.JPG */,
 				2C92751A1F03546800B4BD83 /* Assets.xcassets */,
 				2C92751C1F03546800B4BD83 /* LaunchScreen.storyboard */,
 				2C92751F1F03546800B4BD83 /* Info.plist */,
@@ -182,7 +179,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2C92751E1F03546800B4BD83 /* LaunchScreen.storyboard in Resources */,
-				2CD155C61F03D65C00819119 /* IMG_0648.JPG in Resources */,
 				2C92751B1F03546800B4BD83 /* Assets.xcassets in Resources */,
 				2C9275191F03546800B4BD83 /* Main.storyboard in Resources */,
 			);
