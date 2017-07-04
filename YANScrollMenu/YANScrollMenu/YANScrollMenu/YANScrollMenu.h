@@ -44,91 +44,137 @@
 #define kScale(P)                ((P) * ([UIScreen mainScreen].bounds.size.width / 375.f))
 #define kPageControlHeight       16
 
-UIKIT_EXTERN NSString * _Nullable const YANScrollMenuReloadData;
-
 NS_ASSUME_NONNULL_BEGIN
 
+/****************************  YANMenuObject ***************************/
 
-/**********************  YANMenuObject ***************************/
-@interface YANMenuObject : NSObject
+/**  
+ *  @brief  The datasource of YANScrollMenu.
+ */
+@protocol YANMenuObject<NSObject>
 /**
- *  text
+ *  The text of item.
  */
 @property (nonatomic, copy) NSString *text;
 /**
- *  image(eg.NSURL ,NSString ,UIImage)
+ *  The image of item. (eg.NSURL,NSString,UIImage)
  */
 @property (nonatomic, strong) id image;
 /**
- *  placeholderImage
+ *  The placeholderImage of item.
  */
 @property (nonatomic, strong) UIImage *placeholderImage;
-
-/**
- instancetype
- */
-+ (instancetype)objectWithText:(NSString *)text image:(id)image placeholderImage:(UIImage *)placeholderImage;
 
 @end
 
 
-/**********************  YANEdgeInsets ***************************/
+/****************************  YANEdgeInsets ***************************/
 
+/**
+ *  @brief  The edgeInsets of YANMenuItem.
+ */
 typedef struct YANEdgeInsets{
     
     CGFloat top;        //The top margin of icon
     CGFloat left;       //The left margin of label
-    CGFloat middle;     //the margin between label and icon
+    CGFloat middle;     //The margin between label and icon
     CGFloat right;      //The right margin of label
     CGFloat bottom;     //The bottom margin of label
     
-    
 }YANEdgeInsets;
 
-UIKIT_STATIC_INLINE YANEdgeInsets YANEdgeInsetsMake(CGFloat top, CGFloat left,CGFloat middle, CGFloat right,CGFloat bottom) {
+/**
+ Make YANEdgeInsets
+
+ @param top       The top margin of icon
+ @param left      The left margin of label
+ @param middle    The margin between label and icon
+ @param right     The right margin of label
+ @param bottom    The bottom margin of label
+ @return YANEdgeInsets
+ */
+UIKIT_STATIC_INLINE YANEdgeInsets YANEdgeInsetsMake(CGFloat top, CGFloat left, CGFloat middle, CGFloat right, CGFloat bottom) {
     YANEdgeInsets insets = {top, left, middle, right,bottom};
     return insets;
 }
 
-/**********************  YANMenuItem ***************************/
+/****************************  YANMenuItem ***************************/
 
-@interface YANMenuItem : UICollectionViewCell
 /**
- *  size of icon
+ *  @brief  The item of YANScrollMenu
+ */
+NS_CLASS_AVAILABLE_IOS(8_0) @interface YANMenuItem : UICollectionViewCell
+/**
+ *  The size of icon.
  */
 @property (nonatomic, assign) CGFloat iconSize  UI_APPEARANCE_SELECTOR ; //defaul is 40;
 /**
- *  cornerRadius of icon
+ *  The cornerRadius of icon.
  */
 @property (nonatomic, assign) CGFloat iconCornerRadius UI_APPEARANCE_SELECTOR; //defaul is 20;
 /**
- *  color of label
+ *  The color of label.
  */
 @property (nonatomic, strong) UIColor *textColor UI_APPEARANCE_SELECTOR ; //defaul is [UIColor darkTextColor];
 /**
- *  font of label
+ *  The font of label.
  */
 @property (nonatomic, strong) UIFont *textFont UI_APPEARANCE_SELECTOR; //defaul is [UIFont systemFontOfSize:14];
 
 @end;
 
 
-@class YANScrollMenu;
 /**********************  YANScrollMenuProtocol ***************************/
 
+@class YANScrollMenu;
+/**
+ *  @brief  YANScrollMenuProtocol(protocol)
+ */
 @protocol YANScrollMenuProtocol <NSObject>
-/** numberOfRowsForEachPage */
+/**
+ Number of rows for each page.
+
+ @param scrollMenu YANScrollMenu
+ @return NSUInteger
+ */
 - (NSUInteger)numberOfRowsForEachPageInScrollMenu:(YANScrollMenu *)scrollMenu;
-/** numberOfItemsForEachRow */
+/**
+ Number of items for each row.
+
+ @param scrollMenu YANScrollMenu
+ @return NSUInteger
+ */
 - (NSUInteger)numberOfItemsForEachRowInScrollMenu:(YANScrollMenu *)scrollMenu;
-/** numberOfMenus (total) */
+/**
+ Number of menus (total).
+
+ @param scrollMenu YANScrollMenu
+ @return NSUInteger
+ */
 - (NSUInteger)numberOfMenusInScrollMenu:(YANScrollMenu *)scrollMenu;
-/** objectAtIndexPath */
-- (YANMenuObject *)scrollMenu:(YANScrollMenu *)scrollMenu objectAtIndexPath:(NSIndexPath *)indexPath;
+/**
+ Object at index.
+
+ @param scrollMenu YANScrollMenu
+ @param indexPath NSIndexPath
+ @return id<YANMenuObject>
+ */
+- (id<YANMenuObject>)scrollMenu:(YANScrollMenu *)scrollMenu objectAtIndexPath:(NSIndexPath *)indexPath;
+
 @optional
-/** edgeInsetsOfItem */
+/**
+ The edgeInsets of item.
+
+ @param scrollMenu YANScrollMenu
+ @return YANEdgeInsets
+ */
 - (YANEdgeInsets)edgeInsetsOfItemInScrollMenu:(YANScrollMenu *)scrollMenu;
-/** didSelectItemAtIndexPath */
+/**
+ Did select at index.
+
+ @param scrollMenu YANScrollMenu
+ @param indexPath NSIndexPath
+ */
 - (void)scrollMenu:(YANScrollMenu *)scrollMenu didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 
 
@@ -136,22 +182,25 @@ UIKIT_STATIC_INLINE YANEdgeInsets YANEdgeInsetsMake(CGFloat top, CGFloat left,CG
 
 /**********************  YANScrollMenu ***************************/
 
-@interface YANScrollMenu : UIView
 /**
- *  delegate
+ *  @brief  YANScrollMenu
+ */
+NS_CLASS_AVAILABLE_IOS(8_0) @interface YANScrollMenu : UIView
+/**
+ *  The delegate of YANScrollMenu
  */
 @property (nonatomic, weak) id<YANScrollMenuProtocol> delegate;
 /**
- *  currentPageIndicatorTintColor of pageControl
+ *  The currentPageIndicatorTintColor of pageControl.
  */
 @property (nonatomic, strong) UIColor *currentPageIndicatorTintColor;  //default is  [UIColor darkTextColor]
 /**
- *  pageIndicatorTintColor of pageControl
+ *  The pageIndicatorTintColor of pageControl.
  */
 @property (nonatomic, strong) UIColor *pageIndicatorTintColor; //default is  [UIColor groupTableViewBackgroundColor]
 
 /**
- reload
+ Use to reload datasource and refresh UI.
  */
 - (void)reloadData;
 

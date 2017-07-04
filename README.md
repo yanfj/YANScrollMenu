@@ -13,7 +13,7 @@
 
 `YANScrollMenu` is available via [Cocoapods](http://cocoapods.org/), add this line in your podfile :
  ```
-    pod 'YANScrollMenu', '~> 0.9.0'
+    pod 'YANScrollMenu', '~> 0.9.1'
  ```
 ## Usage
 1. Import the class  :
@@ -32,7 +32,7 @@
    - (NSUInteger)numberOfRowsForEachPageInScrollMenu:(YANScrollMenu *)scrollMenu;
    - (NSUInteger)numberOfItemsForEachRowInScrollMenu:(YANScrollMenu *)scrollMenu;
    - (NSUInteger)numberOfMenusInScrollMenu:(YANScrollMenu *)scrollMenu;
-   - (YANMenuObject *)scrollMenu:(YANScrollMenu *)scrollMenu objectAtIndexPath:(NSIndexPath *)indexPath;
+   - (id<YANMenuObject>)scrollMenu:(YANScrollMenu *)scrollMenu objectAtIndexPath:(NSIndexPath *)indexPath;
    ```
 4. Custom appearance :
    ```objective-c
@@ -52,6 +52,7 @@ YANScrollMenu depend on  `SDWebImage` and  `Masonry`.
 
 ## Release Notes
 
+* V 0.9.1   Fix some bug and optimize the code
 * V 0.9.0   The first version
 
 ## License

@@ -7,7 +7,8 @@
 //
 
 #import "TableViewController.h"
-#import "YANScrollMenu.h"
+#import "DataSource.h"
+
 
 #define ItemHeight 90
 #define IMG(name)           [UIImage imageNamed:name]
@@ -22,11 +23,11 @@
 /**
  *  dataSource
  */
-@property (nonatomic, strong) NSMutableArray<YANMenuObject *> *dataSource;
+@property (nonatomic, strong) NSMutableArray<DataSource *> *dataSource;
 @end
 
 @implementation TableViewController
-- (NSMutableArray<YANMenuObject *> *)dataSource{
+- (NSMutableArray<DataSource *> *)dataSource{
     if (_dataSource == nil) {
         _dataSource = [NSMutableArray array];
     }
@@ -102,7 +103,10 @@
     
     for (NSUInteger idx = 0; idx< images.count; idx ++) {
         
-        YANMenuObject *object = [YANMenuObject objectWithText:titles[idx] image:images[idx] placeholderImage:IMG(@"placeholder")];
+        DataSource *object = [[DataSource alloc] init];
+        object.text = titles[idx];
+        object.image = images[idx];
+        object.placeholderImage = IMG(@"placeholder");
         
         [self.dataSource addObject:object];
         
@@ -123,7 +127,7 @@
     
     return self.dataSource.count;
 }
-- (YANMenuObject *)scrollMenu:(YANScrollMenu *)scrollMenu objectAtIndexPath:(NSIndexPath *)indexPath{
+- (id<YANMenuObject>)scrollMenu:(YANScrollMenu *)scrollMenu objectAtIndexPath:(NSIndexPath *)indexPath{
     
     NSUInteger idx = indexPath.section * item + indexPath.row;
     
@@ -192,9 +196,6 @@
         default:
             break;
     }
-    
-    
-    
 }
 
 

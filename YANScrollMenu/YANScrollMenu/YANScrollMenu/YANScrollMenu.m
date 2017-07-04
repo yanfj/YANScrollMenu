@@ -10,32 +10,18 @@
 #import "Masonry.h"
 #import "UIImageView+WebCache.h"
 
-/**********************  YANMenuObject ***************************/
-@implementation YANMenuObject
-#pragma mark - Life Cycle
-+ (instancetype)objectWithText:(NSString *)text image:(id)image placeholderImage:(UIImage *)placeholderImage{
-    
-    YANMenuObject *object = [[YANMenuObject alloc] init];
-    object.text = text;
-    object.image = image;
-    object.placeholderImage = placeholderImage;
-    
-    return object;
-}
-
-@end
 /**********************  YANMenuItem ***************************/
 @interface YANMenuItem ()
 /**
- *  icon
+ *  The icon.
  */
 @property (nonatomic, strong) UIImageView *icon;
 /**
- *  label
+ *  The label.
  */
 @property (nonatomic, strong) UILabel *label;
 /**
- *  edge of item
+ *  The edge of item.
  */
 @property (nonatomic, assign) YANEdgeInsets edgeInsets; //default is {5,0,5,0,5}
 
@@ -135,14 +121,14 @@
     
     [super layoutSubviews];
     
-    //icon
+    //The constraint of icon.
     [self.icon mas_updateConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.edgeInsets.top);
         make.centerX.mas_equalTo(self.contentView);
         make.height.width.mas_equalTo(self.iconSize);
     }];
 
-    //label
+    //The constraint of label.
     [self.label mas_updateConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.icon.mas_bottom).offset(self.edgeInsets.middle);
         make.left.mas_equalTo(self.edgeInsets.left);
@@ -178,7 +164,7 @@
     }
 }
 #pragma mark - Customize
-- (void)customizeItemWithObject:(YANMenuObject *)object{
+- (void)customizeItemWithObject:(id<YANMenuObject>)object{
     
     if (object == nil) return;
     
@@ -207,37 +193,64 @@
 @end
 
 
-
 /**********************  YANMenuSectionProtocol ***************************/
 @class YANMenuSection;
+
 @protocol YANMenuSectionProtocol <NSObject>
-/** sizeOfItems */
+/**
+ Size of items.
+
+ @param menuSection YANMenuSection
+ @return CGSize
+ */
 - (CGSize)sizeOfItemsInMenuSection:(YANMenuSection *)menuSection;
-/**  numberOfItems */
+/**
+ Number of items.
+
+ @param menuSection YANMenuSection
+ @return NSUInteger
+ */
 - (NSUInteger)numberOfItemsInMenuSection:(YANMenuSection *)menuSection;
-/** objectAtIndexPath */
-- (YANMenuObject *)menuSection:(YANMenuSection *)menuSection objectAtIndexPath:(NSIndexPath *)indexPath;
+/**
+ Object at indexPath.
+
+ @param menuSection YANMenuSection
+ @param indexPath NSIndexPath
+ @return id<YANMenuObject>
+ */
+- (id<YANMenuObject>)menuSection:(YANMenuSection *)menuSection objectAtIndexPath:(NSIndexPath *)indexPath;
+
 @optional
-/** edgeInsetsOfItem */
+/**
+ EdgeInsets of item.
+
+ @param menuSection YANMenuSection
+ @return YANEdgeInsets
+ */
 - (YANEdgeInsets)edgeInsetsOfItemMenuSection:(YANMenuSection *)menuSection;
-/**  didSelectItemAtIndexPath */
+/**
+ Did select item at indexPath.
+
+ @param menuSection YANMenuSection
+ @param indexPath NSIndexPath
+ */
 - (void)menuSection:(YANMenuSection *)menuSection didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 
 
 @end
 
 /**********************  YANMenuSection ***************************/
-@interface YANMenuSection : UICollectionViewCell<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
+NS_CLASS_AVAILABLE_IOS(8_0) @interface YANMenuSection : UICollectionViewCell<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 /**
- *  collectionView
+ *  The collectionView.
  */
 @property (nonatomic, strong) UICollectionView *collectionView;
 /**
- *  delegate
+ *  The delegate.
  */
 @property (nonatomic, weak) id<YANMenuSectionProtocol> delegate;
 /**
- *  section
+ *  The section.
  */
 @property (nonatomic, assign) NSUInteger section;
 
@@ -336,7 +349,7 @@
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(menuSection:objectAtIndexPath:)]) {
         
-        YANMenuObject *  object = [self.delegate menuSection:self objectAtIndexPath:indexPath];
+        id<YANMenuObject> object = [self.delegate menuSection:self objectAtIndexPath:indexPath];
         [item customizeItemWithObject:object];
     }
     
@@ -357,11 +370,11 @@
 /**********************  YANScrollMenu ***************************/
 @interface YANScrollMenu ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,YANMenuSectionProtocol>
 /**
- *  collectionView
+ *  The collectionView.
  */
 @property (nonatomic, strong) UICollectionView *collectionView;
 /**
- *  pageControl
+ *  The pageControl.
  */
 @property (nonatomic, strong) UIPageControl *pageControl;
 
@@ -547,7 +560,7 @@
     
     return 0;
 }
-- (YANMenuObject *)menuSection:(YANMenuSection *)menuSection objectAtIndexPath:(NSIndexPath *)indexPath{
+- (id<YANMenuObject>)menuSection:(YANMenuSection *)menuSection objectAtIndexPath:(NSIndexPath *)indexPath{
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(scrollMenu:objectAtIndexPath:)]) {
         
