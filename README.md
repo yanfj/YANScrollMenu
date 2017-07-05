@@ -52,8 +52,8 @@ YANScrollMenu depend on  `SDWebImage` and  `Masonry`.
 
 ## Release Notes
 
-* V 0.9.1   Fix some bug and optimize the code
-* V 0.9.0   The first version
+* V 0.9.1    Fix some bug and optimize the code
+* V 0.9.0    The first version
 
 ## License
 
