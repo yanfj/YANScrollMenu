@@ -90,7 +90,7 @@ Pod::Spec.new do |s|
   #  For header files it will include any header in the folder.
   #  Not including the public_header_files will make all headers public.
   #
-  # UIView 和 EasyLog 在工程中以子目录显示
+  #  YANScrollMenu在工程中以子目录显示
   s.subspec 'YANScrollMenu' do |ss|
     ss.source_files = 'YANScrollMenu/YANScrollMenu/YANScrollMenu/*.{h,m}'
   end
