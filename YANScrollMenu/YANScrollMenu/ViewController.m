@@ -7,31 +7,66 @@
 //
 
 #import "ViewController.h"
+#import "YANFlowLayout.h"
+#import <Masonry.h>
 
-@interface ViewController ()
-
+@interface ViewController ()<UICollectionViewDelegate,UICollectionViewDataSource>
+/**
+ *  The collectionView.
+ */
+@property (nonatomic, strong) UICollectionView *collectionView;
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+//    self.collectionView = ({
+//        
+//        YANFlowLayout *layout = [[YANFlowLayout alloc] init];
+//        layout.itemSize = CGSizeMake(100, 70);
+//        
+//        UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+//        collectionView.backgroundColor = [UIColor whiteColor];
+//        collectionView.showsVerticalScrollIndicator = NO;
+//        collectionView.showsHorizontalScrollIndicator = NO;
+//        collectionView.pagingEnabled = YES;
+//        
+//        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"log"];
+//        
+//        collectionView.delegate = self;
+//        collectionView.dataSource = self;
+//        
+//        collectionView;
+//        
+//    });
+//    
+//    [self.view addSubview:self.collectionView];
+//    [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.left.right.mas_equalTo(self.view);
+//        make.height.mas_equalTo(140);
+//    }];
+//
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+    
+    return section < 2 ? 4 : 3;
+    
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+    
+    
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"log" forIndexPath:indexPath];
+    cell.contentView.backgroundColor = [UIColor blueColor];
+    
+    return cell;
+    
 }
-*/
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
+    
+    return 3;
+}
 
 @end
