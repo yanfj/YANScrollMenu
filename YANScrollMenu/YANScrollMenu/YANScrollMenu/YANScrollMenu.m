@@ -439,7 +439,6 @@ NS_CLASS_AVAILABLE_IOS(8_0) @interface YANMenuSection : UICollectionViewCell<UIC
         collectionView.pagingEnabled = YES;
         
         [collectionView registerClass:[YANMenuSection class] forCellWithReuseIdentifier:[YANMenuSection identifier]];
-        [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"log"];
         
         collectionView.delegate = self;
         collectionView.dataSource = self;

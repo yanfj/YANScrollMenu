@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C1654691F53C40B002BD806 /* YANFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1654681F53C40B002BD806 /* YANFlowLayout.m */; };
+		2C16546C1F53F154002BD806 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C16546B1F53F154002BD806 /* ViewController.m */; };
 		2C9275101F03546800B4BD83 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C92750F1F03546800B4BD83 /* main.m */; };
 		2C9275131F03546800B4BD83 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C9275121F03546800B4BD83 /* AppDelegate.m */; };
 		2C9275191F03546800B4BD83 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C9275171F03546800B4BD83 /* Main.storyboard */; };
@@ -19,6 +21,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2C1654671F53C40B002BD806 /* YANFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YANFlowLayout.h; sourceTree = "<group>"; };
+		2C1654681F53C40B002BD806 /* YANFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YANFlowLayout.m; sourceTree = "<group>"; };
+		2C16546A1F53F154002BD806 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		2C16546B1F53F154002BD806 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		2C92750B1F03546800B4BD83 /* YANScrollMenu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YANScrollMenu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C92750F1F03546800B4BD83 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2C9275111F03546800B4BD83 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -78,6 +84,8 @@
 				2CB0C06C1F0B667A00469BF6 /* DataSource.m */,
 				2C9275301F03C2A900B4BD83 /* TableViewController.h */,
 				2C9275311F03C2A900B4BD83 /* TableViewController.m */,
+				2C16546A1F53F154002BD806 /* ViewController.h */,
+				2C16546B1F53F154002BD806 /* ViewController.m */,
 				2C9275171F03546800B4BD83 /* Main.storyboard */,
 				2C92751A1F03546800B4BD83 /* Assets.xcassets */,
 				2C92751C1F03546800B4BD83 /* LaunchScreen.storyboard */,
@@ -100,6 +108,8 @@
 			children = (
 				2C9275261F0355D800B4BD83 /* YANScrollMenu.h */,
 				2C9275271F0355D800B4BD83 /* YANScrollMenu.m */,
+				2C1654671F53C40B002BD806 /* YANFlowLayout.h */,
+				2C1654681F53C40B002BD806 /* YANFlowLayout.m */,
 			);
 			path = YANScrollMenu;
 			sourceTree = "<group>";
@@ -244,10 +254,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C16546C1F53F154002BD806 /* ViewController.m in Sources */,
 				2C9275131F03546800B4BD83 /* AppDelegate.m in Sources */,
 				2CB0C06D1F0B667A00469BF6 /* DataSource.m in Sources */,
 				2C9275281F0355D800B4BD83 /* YANScrollMenu.m in Sources */,
 				2C9275321F03C2A900B4BD83 /* TableViewController.m in Sources */,
+				2C1654691F53C40B002BD806 /* YANFlowLayout.m in Sources */,
 				2C9275101F03546800B4BD83 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
