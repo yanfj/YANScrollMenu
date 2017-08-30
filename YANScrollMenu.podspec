@@ -16,8 +16,8 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "YANScrollMenu"
-  s.version      = "0.9.1"
-  s.summary      = " A scroll menu similar to MeiTuan"
+  s.version      = "1.0.0"
+  s.summary      = "简单易用的滑动菜单"
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   s.description  = <<-DESC
-                   A scroll menu similar to the main page of Meituan app
+                   类似美团、大众点评等首页的滑动菜单，具有更好的拓展性
                    DESC
 
   s.homepage     = "https://github.com/yanff/YANScrollMenu"
@@ -90,10 +90,10 @@ Pod::Spec.new do |s|
   #  For header files it will include any header in the folder.
   #  Not including the public_header_files will make all headers public.
   #
-  #  YANScrollMenu在工程中以子目录显示
-  s.subspec 'YANScrollMenu' do |ss|
-    ss.source_files = 'YANScrollMenu/YANScrollMenu/YANScrollMenu/*.{h,m}'
-  end
+  #图片(4.0 版本后不能播放gif)
+  s.dependency 'SDWebImage', '3.8.2'
+  s.dependency 'Masonry', '1.0.2'
+  s.source_files = 'YANScrollMenu/YANScrollMenu/YANScrollMenu/*.{h,m}'
 
 
   # s.public_header_files = "Classes/**/*.h"
@@ -135,8 +135,6 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
-  #图片(4.0 版本后不能播放gif)
-  s.dependency 'SDWebImage', '3.8.2'
-  s.dependency 'Masonry', '1.0.2'
+
 
 end
