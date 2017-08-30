@@ -126,6 +126,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (CGFloat)heightOfPageControlInScrollMenu:(YANScrollMenu *)menu;
 /**
+ 当单元格数量改变时，是否自动更新Frame以适应。默认是NO
+
+ @return BOOL
+ */
+- (BOOL)shouldAutomaticUpdateFrameInScrollMenu:(YANScrollMenu *)menu;
+/**
  单元格点击回调
 
  @param menu 菜单

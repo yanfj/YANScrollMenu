@@ -19,7 +19,13 @@
 @interface TableViewController ()<YANScrollMenuDelegate,YANScrollMenuDataSource>
 {
     BOOL _showHeader;
+    BOOL _automaticUpdate;
 }
+
+/**
+ 是否自动更新
+ */
+@property (weak, nonatomic) IBOutlet UILabel *label;
 /**
  *  allDataSource
  */
@@ -76,6 +82,9 @@
     self.number = 1;
     
     _showHeader = YES;
+    _automaticUpdate = YES;
+    
+    self.label.text = @"YES";
     
     self.menu = [[YANScrollMenu alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width,kScale(240)) delegate:self];
     self.menu.currentPageIndicatorTintColor = [UIColor colorWithRed:107/255.f green:191/255.f blue:255/255.f alpha:1.0];
@@ -192,6 +201,15 @@
     return   _showHeader ? kScale(30) : 0;
     
 }
+- (void)scrollMenu:(YANScrollMenu *)menu didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    
+    NSLog(@"IndexPath:%@",indexPath);
+    
+}
+- (BOOL)shouldAutomaticUpdateFrameInScrollMenu:(YANScrollMenu *)menu{
+    
+    return _automaticUpdate;
+}
 #pragma mark - TableView Delegate & DataSource
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
@@ -222,6 +240,11 @@
             break;
         case 4:
             _showHeader = !_showHeader;
+            break;
+        case 5:{
+            _automaticUpdate = !_automaticUpdate;
+            self.label.text = _automaticUpdate ? @"YES" : @"NO" ;
+        }
             break;
         default:
             break;

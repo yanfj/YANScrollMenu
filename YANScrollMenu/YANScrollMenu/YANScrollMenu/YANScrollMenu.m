@@ -230,6 +230,10 @@
  *  分页器总页数
  */
 @property (nonatomic, assign) NSUInteger totalPages;
+/**
+ *  是否自动更新Frame
+ */
+@property (nonatomic, assign) BOOL automaticUpdateFrame;
 @end
 
 @implementation YANScrollMenu
@@ -425,8 +429,8 @@
 - (NSUInteger)totalPages{
     
     //视图尺寸
-    CGFloat width = self.originFrame.size.width;
-    CGFloat height = self.originFrame.size.height - self.pageControlHeight - self.headerHeight;
+    CGFloat width = self.frame.size.width;
+    CGFloat height = self.frame.size.height - self.pageControlHeight - self.headerHeight;
     //行列最大的单元格数量
     NSInteger xCount = width/self.itemSize.width;
     NSInteger yCount = height/self.itemSize.height;
@@ -449,6 +453,17 @@
     }
     
     return page;
+}
+/** 是否调节Frame以自适应 */
+- (BOOL)automaticUpdateFrame{
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(shouldAutomaticUpdateFrameInScrollMenu:)]) {
+        
+        return [self.delegate shouldAutomaticUpdateFrameInScrollMenu:self];
+    }
+    
+    return NO;
+    
 }
 /** 获取分区个数 */
 - (NSUInteger)getNumberOfSections{
@@ -593,7 +608,7 @@
     
     self.flowLayout.itemSize = self.itemSize;
     
-    [self updateFrame];
+    self.automaticUpdateFrame ? [self updateFrame]:nil;
     
     self.pageControl.hidden = (self.totalPages == 1);
     
