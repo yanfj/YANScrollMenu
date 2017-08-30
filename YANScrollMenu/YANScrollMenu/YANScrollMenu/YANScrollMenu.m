@@ -11,6 +11,9 @@
 #import <Masonry/Masonry.h>
 #import <SDWebImage/UIImageView+WebCache.h>
 
+//自动处理屏幕适配
+#define kScale(P)                ((P) * ([UIScreen mainScreen].bounds.size.width / 375.f))
+
 
 #pragma mark - YANMenuItem
 /** 菜单单元格 */

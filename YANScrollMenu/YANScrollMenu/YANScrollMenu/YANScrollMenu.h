@@ -41,8 +41,6 @@
 
 #import <UIKit/UIKit.h>
 
-#define kScale(P)                ((P) * ([UIScreen mainScreen].bounds.size.width / 375.f))
-
 NS_ASSUME_NONNULL_BEGIN
 
 
