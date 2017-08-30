@@ -6,12 +6,12 @@
 ![GIF](YANScrollMenu.gif)
 
 ## Requirements 
----
+
 * **ARC**
 * **iOS 8.0+**
 
 ## Cocoapods
----
+
 **`YANScrollMenu` is available via [Cocoapods](http://cocoapods.org/), add this line in your podfile :**
 
 ```
@@ -19,7 +19,7 @@ pod 'YANScrollMenu', '~> 1.0.0'
 
 ```
 ## Usage
----
+
 **1. Import the class  :**
 
 ```objective-C
@@ -87,21 +87,22 @@ self.tableView.tableHeaderView = self.menu;
 ```
 
 ## Dependency
----
+
 
 **YANScrollMenu depend on  `SDWebImage` and  `Masonry`.**
 **Notes** : When the version of  `SDWebImage` large than `3.8.2` , gif will not be supported.
 
 ## Release Notes
 
+
 * **V 1.0.0**    The framework has been refactored
 * **V 0.9.1**    Fix some bug and optimize the code
 * **V 0.9.0**    The first version
 
 ## License
----
+
 YANScrollMenu is released under the MIT license. See LICENSE file for details.
 
 ## Contact
----
+
 Any suggestion or question? Please create a Github issue .
