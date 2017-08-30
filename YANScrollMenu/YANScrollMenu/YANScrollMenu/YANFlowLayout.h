@@ -8,11 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
+/**
+ 横向布局
+ */
 @interface YANFlowLayout : UICollectionViewFlowLayout
 
 
 @end
 
-NS_ASSUME_NONNULL_END

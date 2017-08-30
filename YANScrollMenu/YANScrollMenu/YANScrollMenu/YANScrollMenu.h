@@ -35,176 +35,168 @@
            :,, , ::::::::i:::i:::i:i::,,,,,:,::i:i:::iir;@Secbone.ii:::
 
                                --    YANScrollMenu  --
-                               Created by Yan. on 2017/6/28.
+                               Created by Yan. on 2017/8/28.
                                Copyright © 2017年 Yan. All rights reserved.
 ****************************************************************************/
 
 #import <UIKit/UIKit.h>
 
 #define kScale(P)                ((P) * ([UIScreen mainScreen].bounds.size.width / 375.f))
-#define kPageControlHeight       16
 
 NS_ASSUME_NONNULL_BEGIN
 
-/****************************  YANMenuObject ***************************/
 
-/**  
- *  @brief  The datasource of YANScrollMenu.
- */
-@protocol YANMenuObject<NSObject>
+/** 数据模型协议 */
+@protocol YANObjectProtocol <NSObject>
 /**
- *  The text of item.
+ *  显示文本
  */
-@property (nonatomic, copy) NSString *text;
+@property (nonatomic, copy) NSString *itemDescription;
 /**
- *  The image of item. (eg.NSURL,NSString,UIImage)
+ *  显示图片，可以为NSURL,NSString,UIImage三种格式
  */
-@property (nonatomic, strong) id image;
+@property (nonatomic, strong) id itemImage;
 /**
- *  The placeholderImage of item.
+ *  占位图片
  */
-@property (nonatomic, strong) UIImage *placeholderImage;
+@property (nonatomic, strong) UIImage *itemPlaceholder;
 
 @end
 
 
-/****************************  YANEdgeInsets ***************************/
 
+/** 菜单单元格 */
+@interface YANMenuItem : UICollectionViewCell
 /**
- *  @brief  The edgeInsets of YANMenuItem.
+ *  图片的尺寸，默认是(40,40)
  */
-typedef struct YANEdgeInsets{
-    
-    CGFloat top;        //The top margin of icon
-    CGFloat left;       //The left margin of label
-    CGFloat middle;     //The margin between label and icon
-    CGFloat right;      //The right margin of label
-    CGFloat bottom;     //The bottom margin of label
-    
-}YANEdgeInsets;
-
+@property (nonatomic, assign) CGSize iconSize  UI_APPEARANCE_SELECTOR ;
 /**
- Make YANEdgeInsets
-
- @param top       The top margin of icon
- @param left      The left margin of label
- @param middle    The margin between label and icon
- @param right     The right margin of label
- @param bottom    The bottom margin of label
- @return YANEdgeInsets
+ *  图片与文本的距离，默认是 10
  */
-UIKIT_STATIC_INLINE YANEdgeInsets YANEdgeInsetsMake(CGFloat top, CGFloat left, CGFloat middle, CGFloat right, CGFloat bottom) {
-    YANEdgeInsets insets = {top, left, middle, right,bottom};
-    return insets;
-}
-
-/****************************  YANMenuItem ***************************/
-
+@property (nonatomic, assign) CGFloat space UI_APPEARANCE_SELECTOR;
 /**
- *  @brief  The item of YANScrollMenu
+ *  图片的圆角率，默认是20
  */
-NS_CLASS_AVAILABLE_IOS(8_0) @interface YANMenuItem : UICollectionViewCell
+@property (nonatomic, assign) CGFloat iconCornerRadius UI_APPEARANCE_SELECTOR;
 /**
- *  The size of icon.
+ *  文本的字体颜色，默认是darkTextColor
  */
-@property (nonatomic, assign) CGFloat iconSize  UI_APPEARANCE_SELECTOR ; //defaul is 40;
+@property (nonatomic, strong) UIColor *textColor UI_APPEARANCE_SELECTOR ;
 /**
- *  The cornerRadius of icon.
+ *  文本的字体大小，默认是14号系统字体
  */
-@property (nonatomic, assign) CGFloat iconCornerRadius UI_APPEARANCE_SELECTOR; //defaul is 20;
-/**
- *  The color of label.
- */
-@property (nonatomic, strong) UIColor *textColor UI_APPEARANCE_SELECTOR ; //defaul is [UIColor darkTextColor];
-/**
- *  The font of label.
- */
-@property (nonatomic, strong) UIFont *textFont UI_APPEARANCE_SELECTOR; //defaul is [UIFont systemFontOfSize:14];
+@property (nonatomic, strong) UIFont *textFont UI_APPEARANCE_SELECTOR;
 
-@end;
+@end
 
-
-/**********************  YANScrollMenuProtocol ***************************/
 
 @class YANScrollMenu;
-/**
- *  @brief  YANScrollMenuProtocol(protocol)
- */
-@protocol YANScrollMenuProtocol <NSObject>
-/**
- Number of rows for each page.
 
- @param scrollMenu YANScrollMenu
- @return NSUInteger
- */
-- (NSUInteger)numberOfRowsForEachPageInScrollMenu:(YANScrollMenu *)scrollMenu;
-/**
- Number of items for each row.
-
- @param scrollMenu YANScrollMenu
- @return NSUInteger
- */
-- (NSUInteger)numberOfItemsForEachRowInScrollMenu:(YANScrollMenu *)scrollMenu;
-/**
- Number of menus (total).
-
- @param scrollMenu YANScrollMenu
- @return NSUInteger
- */
-- (NSUInteger)numberOfMenusInScrollMenu:(YANScrollMenu *)scrollMenu;
-/**
- Object at index.
-
- @param scrollMenu YANScrollMenu
- @param indexPath NSIndexPath
- @return id<YANMenuObject>
- */
-- (id<YANMenuObject>)scrollMenu:(YANScrollMenu *)scrollMenu objectAtIndexPath:(NSIndexPath *)indexPath;
-
+/** 代理协议 */
+@protocol YANScrollMenuDelegate <NSObject>
 @optional
 /**
- The edgeInsets of item.
+ 单元格尺寸，默认是(40,70)
 
- @param scrollMenu YANScrollMenu
- @return YANEdgeInsets
+ @param menu 菜单
+ @return CGSize
  */
-- (YANEdgeInsets)edgeInsetsOfItemInScrollMenu:(YANScrollMenu *)scrollMenu;
+- (CGSize)itemSizeOfScrollMenu:(YANScrollMenu *)menu;
 /**
- Did select at index.
+ 分区的页眉，默认不显示
 
- @param scrollMenu YANScrollMenu
- @param indexPath NSIndexPath
+ @param menu 菜单
+ @param section 分区
+ @return UIView
  */
-- (void)scrollMenu:(YANScrollMenu *)scrollMenu didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
+- (UIView *)scrollMenu:(YANScrollMenu *)menu headerInSection:(NSUInteger)section;
+/**
+ 页眉的高度，默认20
 
+ @param menu 菜单
+ @return CGFloat
+ */
+- (CGFloat)heightOfHeaderInScrollMenu:(YANScrollMenu *)menu;
+/**
+ 分页器的高度，默认15
+
+ @param menu 菜单
+ @return CGFloat
+ */
+- (CGFloat)heightOfPageControlInScrollMenu:(YANScrollMenu *)menu;
+/**
+ 单元格点击回调
+
+ @param menu 菜单
+ @param indexPath 索引
+ */
+- (void)scrollMenu:(YANScrollMenu *)menu didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 
-/**********************  YANScrollMenu ***************************/
+
+/** 数据源协议 */
+@protocol YANScrollMenuDataSource <NSObject>
+/**
+ 每个分区单元格的数量
+
+ @param menu 菜单
+ @param section 分区
+ @return NSUInteger
+ */
+- (NSUInteger)scrollMenu:(YANScrollMenu *)menu numberOfItemsInSection:(NSInteger)section;
+/**
+ 分区的数量
+
+ @param menu 菜单
+ @return NSUInteger
+ */
+- (NSUInteger)numberOfSectionsInScrollMenu:(YANScrollMenu *)menu;
+/**
+ 数据源
+
+ @param scrollMenu 菜单
+ @param indexPath 索引
+ @return id<YANObjectProtocol>
+ */
+- (id<YANObjectProtocol>)scrollMenu:(YANScrollMenu *)scrollMenu objectAtIndexPath:(NSIndexPath *)indexPath;
+
+@end
+
+
+
+/** 滑动菜单 */
+@interface YANScrollMenu : UIView
+/**
+ *  分页控制器当前分页的颜色，默认是 darkTextColor;
+ */
+@property (nonatomic, strong) UIColor *currentPageIndicatorTintColor;
+/**
+ *  分页控制器分页的颜色，默认是 groupTableViewBackgroundColor;
+ */
+@property (nonatomic, strong) UIColor *pageIndicatorTintColor;
 
 /**
- *  @brief  YANScrollMenu
- */
-NS_CLASS_AVAILABLE_IOS(8_0) @interface YANScrollMenu : UIView
-/**
- *  The delegate of YANScrollMenu
- */
-@property (nonatomic, weak) id<YANScrollMenuProtocol> delegate;
-/**
- *  The currentPageIndicatorTintColor of pageControl.
- */
-@property (nonatomic, strong) UIColor *currentPageIndicatorTintColor;  //default is  [UIColor darkTextColor]
-/**
- *  The pageIndicatorTintColor of pageControl.
- */
-@property (nonatomic, strong) UIColor *pageIndicatorTintColor; //default is  [UIColor groupTableViewBackgroundColor]
+ 初始化方法
 
+ @param frame CGRect
+ @param aDelegate id
+ @return 实例
+ */
+- (instancetype)initWithFrame:(CGRect)frame  delegate:(id)aDelegate;
 /**
- Use to reload datasource and refresh UI.
+ 刷新
  */
 - (void)reloadData;
 
+#pragma mark - 禁用的初始化方法
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
+
 @end
 
-
 NS_ASSUME_NONNULL_END
+
+

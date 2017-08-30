@@ -83,18 +83,18 @@
     //collectionView 的高度
     CGFloat height = CGRectGetHeight(self.collectionView.frame);
     
-    
     return CGSizeMake( actualLo*width , height);
-    
 }
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath{
     
     UICollectionViewLayoutAttributes *attr = [super layoutAttributesForItemAtIndexPath:indexPath];
     
-    [self updateLayoutAttributes:attr];
+    UICollectionViewLayoutAttributes *newAttr = [attr copy];
     
-    return attr;
+    [self updateLayoutAttributes:newAttr];
+    
+    return newAttr;
 }
 - (void)updateLayoutAttributes:(UICollectionViewLayoutAttributes *)attributes{
     
@@ -102,16 +102,22 @@
         
         return;
     }
-    
-    //attributes 的宽度
-    CGFloat itemW = CGRectGetWidth(attributes.frame);
-    //attributes 的高度
-    CGFloat itemH = CGRectGetHeight(attributes.frame);
-    
     //collectionView 的宽度
     CGFloat width = CGRectGetWidth(self.collectionView.frame);
     //collectionView 的高度
     CGFloat height = CGRectGetHeight(self.collectionView.frame);
+    
+    if (width == 0 || height == 0) {
+        
+        return;
+    }
+    
+    //attributes 的宽度
+    CGFloat itemW = self.itemSize.width;
+    //attributes 的高度
+    CGFloat itemH = self.itemSize.height;
+    
+    
     //每个attributes的下标值 从0开始
     NSInteger itemIndex = attributes.indexPath.item;
     
@@ -130,10 +136,15 @@
     NSInteger xCount = (width / itemW);
     //计算y方向item个数
     NSInteger yCount = (height / itemH);
+    
+    //计算间隔
+    CGFloat xSpace = (width - xCount*itemW)/(xCount + 1);
+    CGFloat ySpace = (height - yCount*itemH)/(yCount + 1);
+    
     //计算一页总个数
     NSInteger allCount = (xCount * yCount);
     //获取每个section的页数，从0开始
-    NSInteger page = itemIndex / allCount;
+    NSInteger page = itemIndex / allCount ;
     
     //余数，用来计算item的x的偏移量
     NSInteger remain = (itemIndex % xCount);
@@ -143,9 +154,9 @@
     
     
     //x方向每个item的偏移量
-    CGFloat xCellOffset = remain * itemW;
+    CGFloat xCellOffset = remain * itemW + xSpace*(remain+1);
     //y方向每个item的偏移量
-    CGFloat yCellOffset = merchant * itemH;
+    CGFloat yCellOffset = merchant * itemH + ySpace*(merchant + 1);
     
     //获取每个section中item占了几页
     NSInteger pageRe = (itemCount % allCount == 0)? (itemCount / allCount) : (itemCount / allCount) + 1;
@@ -170,7 +181,7 @@
         
         yCellOffset += offset;
     }
-    
+    //更新后的attributes
     attributes.frame = CGRectMake(xCellOffset, yCellOffset, itemW, itemH);
 }
 - (NSArray<UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect{

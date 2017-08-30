@@ -9,19 +9,19 @@
 #import <Foundation/Foundation.h>
 #import "YANScrollMenu.h"
 
-@interface DataSource : NSObject<YANMenuObject>
+@interface DataSource : NSObject<YANObjectProtocol>
 /**
  *  text
  */
-@property (nonatomic, copy) NSString *text;
+@property (nonatomic, copy) NSString *itemDescription;
 /**
  *  image(eg.NSURL ,NSString ,UIImage)
  */
-@property (nonatomic, strong) id image;
+@property (nonatomic, strong) id itemImage;
 /**
  *  placeholderImage
  */
-@property (nonatomic, strong) UIImage *placeholderImage;
+@property (nonatomic, strong) UIImage *itemPlaceholder;
 
 
 @end

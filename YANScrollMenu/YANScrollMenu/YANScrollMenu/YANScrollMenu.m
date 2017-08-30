@@ -7,33 +7,34 @@
 //
 
 #import "YANScrollMenu.h"
-#import "Masonry.h"
-#import "UIImageView+WebCache.h"
+#import "YANFlowLayout.h"
+#import <Masonry.h>
+#import <SDWebImage/UIImageView+WebCache.h>
 
-/**********************  YANMenuItem ***************************/
+
+#pragma mark - YANMenuItem
+/** 菜单单元格 */
 @interface YANMenuItem ()
 /**
- *  The icon.
+ *  图片
  */
 @property (nonatomic, strong) UIImageView *icon;
 /**
- *  The label.
+ *  文本
  */
 @property (nonatomic, strong) UILabel *label;
-/**
- *  The edge of item.
- */
-@property (nonatomic, assign) YANEdgeInsets edgeInsets; //default is {5,0,5,0,5}
 
 @end
+
 
 @implementation YANMenuItem
 #pragma mark - Life Cycle
 + (void)initialize{
     
     YANMenuItem *item = [self appearance];
-    item.iconSize = kScale(40);
+    item.iconSize = CGSizeMake(kScale(40), kScale(40));
     item.iconCornerRadius = kScale(20);
+    item.space = kScale(10);
     item.textColor = [UIColor darkTextColor];
     item.textFont = [UIFont systemFontOfSize:kScale(14)];
     
@@ -49,24 +50,36 @@
     
 }
 #pragma mark - Getter&Setter
-- (void)setIconSize:(CGFloat)iconSize{
+- (void)setIconSize:(CGSize)iconSize{
     
-    if (iconSize >= 0) {
+    if (iconSize.width > 0 && iconSize.height > 0) {
         
         _iconSize = iconSize;
         
-        [self updateIconConstraints];
+        [self layoutIfNeeded];
+    }
+    
+}
+- (void)setSpace:(CGFloat)space{
+    
+    if (space > 0) {
+        
+        _space = space;
+        
+        [self layoutIfNeeded];
     }
     
 }
 - (void)setIconCornerRadius:(CGFloat)iconCornerRadius{
     
-    if (iconCornerRadius >= 0) {
+    if (iconCornerRadius > 0) {
         
         _iconCornerRadius = iconCornerRadius;
         
         self.icon.layer.cornerRadius = iconCornerRadius;
+        
     }
+    
 }
 - (void)setTextColor:(UIColor *)textColor{
     
@@ -82,14 +95,14 @@
     self.label.font = textFont;
     
 }
-- (void)setEdgeInsets:(YANEdgeInsets)edgeInsets{
+- (void)setBackgroundColor:(UIColor *)backgroundColor{
     
-    _edgeInsets = edgeInsets;
+    [super setBackgroundColor:backgroundColor];
     
-    [self updateItemEdgeInsets];
+    self.contentView.backgroundColor = backgroundColor;
     
 }
-#pragma mark - Prepare UI
+#pragma mark - UI
 - (void)prepareUI{
     
     self.contentView.backgroundColor = [UIColor whiteColor];
@@ -118,502 +131,479 @@
     
 }
 - (void)layoutSubviews{
-    
+
     [super layoutSubviews];
-    
-    //The constraint of icon.
+
+    //图片的约束
     [self.icon mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.edgeInsets.top);
         make.centerX.mas_equalTo(self.contentView);
-        make.height.width.mas_equalTo(self.iconSize);
+        make.size.mas_equalTo(self.iconSize);
+        make.centerY.mas_equalTo(self.contentView).offset(- 2*self.space);
     }];
 
-    //The constraint of label.
+    //文本的约束
     [self.label mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.icon.mas_bottom).offset(self.edgeInsets.middle);
-        make.left.mas_equalTo(self.edgeInsets.left);
-        make.right.mas_equalTo(- self.edgeInsets.right);
-        make.bottom.mas_equalTo(- self.edgeInsets.bottom);
+        make.left.right.bottom.mas_equalTo(self.contentView);
+        make.top.equalTo(self.icon.mas_bottom).offset(self.space);
     }];
-    
+
 }
-- (void)updateIconConstraints{
-    
-    if (self.icon) {
-                
-        [self.icon mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.height.width.mas_equalTo(self.iconSize);
-        }];
-    }
-    
-}
-- (void)updateItemEdgeInsets{
-    
-    if (self.icon && self.label) {
-        
-        [self.icon mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(self.edgeInsets.top);
-        }];
-        
-        [self.label mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self.icon.mas_bottom).offset(self.edgeInsets.middle);
-            make.left.mas_equalTo(self.edgeInsets.left);
-            make.right.mas_equalTo(- self.edgeInsets.right);
-            make.bottom.mas_equalTo(- self.edgeInsets.bottom);
-        }];
-    }
+#pragma mark - Identifier
++ (NSString *)identifier{
+
+    return NSStringFromClass([self class]);
+
 }
 #pragma mark - Customize
-- (void)customizeItemWithObject:(id<YANMenuObject>)object{
+- (void)customizeItemWithObject:(id<YANObjectProtocol>)object{
     
-    if (object == nil) return;
+    if (object == nil)  return;
     
-    self.label.text = object.text;
+    self.label.text = object.itemDescription;
     
-    if ([object.image isKindOfClass:[NSString class]]) {
+    if ([object.itemImage isKindOfClass:[NSString class]]) {
         
-        NSURL *url = [NSURL URLWithString:(NSString *)object.image];
-        [self.icon sd_setImageWithURL:url placeholderImage:object.placeholderImage];
+        NSURL *url = [NSURL URLWithString:(NSString *)object.itemImage];
+        [self.icon sd_setImageWithURL:url placeholderImage:object.itemPlaceholder];
         
-    }else if ([object.image isKindOfClass:[NSURL class]]){
+    }else if ([object.itemImage isKindOfClass:[NSURL class]]){
         
-        [self.icon sd_setImageWithURL:(NSURL *)object.image placeholderImage:object.placeholderImage];
+        [self.icon sd_setImageWithURL:(NSURL *)object.itemImage placeholderImage:object.itemPlaceholder];
         
-    }else if ([object.image isKindOfClass:[UIImage class]]){
+    }else if ([object.itemImage isKindOfClass:[UIImage class]]){
         
-        self.icon.image = (UIImage *)object.image;
+        self.icon.image = (UIImage *)object.itemImage;
     }
+
 }
-#pragma mark - Identifier
-+ (NSString *)identifier{
-    
-    return NSStringFromClass([self class]);
-    
-}
-@end
-
-
-/**********************  YANMenuSectionProtocol ***************************/
-@class YANMenuSection;
-
-@protocol YANMenuSectionProtocol <NSObject>
-/**
- Size of items.
-
- @param menuSection YANMenuSection
- @return CGSize
- */
-- (CGSize)sizeOfItemsInMenuSection:(YANMenuSection *)menuSection;
-/**
- Number of items.
-
- @param menuSection YANMenuSection
- @return NSUInteger
- */
-- (NSUInteger)numberOfItemsInMenuSection:(YANMenuSection *)menuSection;
-/**
- Object at indexPath.
-
- @param menuSection YANMenuSection
- @param indexPath NSIndexPath
- @return id<YANMenuObject>
- */
-- (id<YANMenuObject>)menuSection:(YANMenuSection *)menuSection objectAtIndexPath:(NSIndexPath *)indexPath;
-
-@optional
-/**
- EdgeInsets of item.
-
- @param menuSection YANMenuSection
- @return YANEdgeInsets
- */
-- (YANEdgeInsets)edgeInsetsOfItemMenuSection:(YANMenuSection *)menuSection;
-/**
- Did select item at indexPath.
-
- @param menuSection YANMenuSection
- @param indexPath NSIndexPath
- */
-- (void)menuSection:(YANMenuSection *)menuSection didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
-
 
 @end
 
-/**********************  YANMenuSection ***************************/
-NS_CLASS_AVAILABLE_IOS(8_0) @interface YANMenuSection : UICollectionViewCell<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
+#pragma mark - YANScrollMenu
+/** 滑动菜单 */
+@interface YANScrollMenu ()<UICollectionViewDelegate,UICollectionViewDataSource>
 /**
- *  The collectionView.
+ *  视图
  */
 @property (nonatomic, strong) UICollectionView *collectionView;
 /**
- *  The delegate.
- */
-@property (nonatomic, weak) id<YANMenuSectionProtocol> delegate;
-/**
- *  The section.
- */
-@property (nonatomic, assign) NSUInteger section;
-
-@end
-
-@implementation YANMenuSection
-#pragma mark - Life Cycle
-- (instancetype)initWithFrame:(CGRect)frame{
-    if (self = [super initWithFrame:frame]) {
-        
-        [self prepareUI];
-        
-    }
-    return self;
-}
-#pragma mark - Getter&Setter
-- (void)setDelegate:(id<YANMenuSectionProtocol>)delegate{
-    
-    _delegate = delegate;
-    
-    if (self.collectionView) {
-        [self.collectionView reloadData];
-    }
-}
-#pragma mark - Prepare UI
-- (void)prepareUI{
-    
-    
-    self.collectionView = ({
-        
-        UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-        layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        layout.minimumLineSpacing = 0;
-        layout.minimumInteritemSpacing = 0;
-        layout.sectionInset = UIEdgeInsetsZero;
-        
-        UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-        collectionView.backgroundColor = [UIColor whiteColor];
-        collectionView.showsVerticalScrollIndicator = NO;
-        collectionView.showsHorizontalScrollIndicator = NO;
-        collectionView.pagingEnabled = YES;
-        
-        [collectionView registerClass:[YANMenuItem class] forCellWithReuseIdentifier:[YANMenuItem identifier]];
-        
-        collectionView.delegate = self;
-        collectionView.dataSource = self;
-        
-        collectionView;
-    
-    });
-    
-    [self.contentView addSubview:self.collectionView];
-    
-}
-- (void)layoutSubviews{
-    
-    [super layoutSubviews];
-    
-    [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(UIEdgeInsetsZero);
-    }];
-}
-#pragma mark - Identifier
-+ (NSString *)identifier{
-    
-    return NSStringFromClass([self class]);
-    
-}
-#pragma mark - UICollectionViewDelegateFlowLayout
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(sizeOfItemsInMenuSection:)]) {
-        
-        return [self.delegate sizeOfItemsInMenuSection:self];
-    }
-    
-    return CGSizeZero;
-}
-#pragma mark - UICollectionViewDataSource
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(numberOfItemsInMenuSection:)]) {
-        
-        return [self.delegate numberOfItemsInMenuSection:self];
-    }
-    
-    return 0;
-    
-}
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView  cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath{
- 
-    YANMenuItem *item = [collectionView dequeueReusableCellWithReuseIdentifier:[YANMenuItem identifier] forIndexPath:indexPath];
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(edgeInsetsOfItemMenuSection:)]) {
-        item.edgeInsets = [self.delegate edgeInsetsOfItemMenuSection:self];
-    }
-    if (self.delegate && [self.delegate respondsToSelector:@selector(menuSection:objectAtIndexPath:)]) {
-        
-        id<YANMenuObject> object = [self.delegate menuSection:self objectAtIndexPath:indexPath];
-        [item customizeItemWithObject:object];
-    }
-    
-    return item;
-    
-}
-#pragma mark - UICollectionViewDelegate
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(menuSection:didSelectItemAtIndexPath:)]) {
-        
-        [self.delegate menuSection:self didSelectItemAtIndexPath:indexPath];
-    }
-}
-
-@end
-
-/**********************  YANScrollMenu ***************************/
-@interface YANScrollMenu ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,YANMenuSectionProtocol>
-/**
- *  The collectionView.
- */
-@property (nonatomic, strong) UICollectionView *collectionView;
-/**
- *  The pageControl.
+ *  分页控制器
  */
 @property (nonatomic, strong) UIPageControl *pageControl;
-
+/**
+ *  布局
+ */
+@property (nonatomic, strong) YANFlowLayout *flowLayout;
+/**
+ *  头
+ */
+@property (nonatomic, strong) UIView *header;
+/**
+ *  代理
+ */
+@property (nonatomic, weak) id<YANScrollMenuDelegate> delegate;
+/**
+ *  数据源
+ */
+@property (nonatomic, weak) id<YANScrollMenuDataSource> dataSource;
+/**
+ *  记录每个分区的位移量
+ */
+@property (nonatomic, strong) NSMutableArray<NSNumber *> *offsetArray;
+/**
+ *  原始尺寸
+ */
+@property (nonatomic, assign) CGRect originFrame;
+/**
+ *  页眉高度
+ */
+@property (nonatomic, assign) CGFloat headerHeight;
+/**
+ *  分页控制器高度
+ */
+@property (nonatomic, assign) CGFloat pageControlHeight;
+/**
+ *  单元格尺寸
+ */
+@property (nonatomic, assign) CGSize itemSize;
+/**
+ *  分页器总页数
+ */
+@property (nonatomic, assign) NSUInteger totalPages;
 @end
 
 @implementation YANScrollMenu
 #pragma mark - Life Cycle
-- (instancetype)initWithFrame:(CGRect)frame{
+- (instancetype)initWithFrame:(CGRect)frame  delegate:(id)aDelegate{
     
     if (self = [super initWithFrame:frame]) {
+        
+        self.delegate = aDelegate;
+        self.dataSource = aDelegate;
+        
+        self.originFrame = frame;
         
         [self prepareUI];
     }
     return self;
-}
-#pragma mark - Getter&Setter
-- (void)setDelegate:(id<YANScrollMenuProtocol>)delegate{
-    
-    _delegate = delegate;
-    
-    if (self.collectionView) {
-        
-        [self.collectionView reloadData];
-    }
     
 }
-- (void)setCurrentPageIndicatorTintColor:(UIColor *)currentPageIndicatorTintColor{
-    
-    _currentPageIndicatorTintColor = currentPageIndicatorTintColor;
-    
-    if (self.pageControl) {
-        
-        self.pageControl.currentPageIndicatorTintColor = currentPageIndicatorTintColor;
-    }
-}
-- (void)setPageIndicatorTintColor:(UIColor *)pageIndicatorTintColor{
-    
-    _pageIndicatorTintColor = pageIndicatorTintColor;
-    
-    if (self.pageIndicatorTintColor) {
-        
-        self.pageIndicatorTintColor = pageIndicatorTintColor;
-    }
-}
-#pragma mark - Prepare UI
+#pragma mark - UI
 - (void)prepareUI{
-    
+
     self.backgroundColor = [UIColor whiteColor];
     
+    self.clipsToBounds = YES;
+    
+    self.flowLayout = ({
+        YANFlowLayout *flowLayout = [[YANFlowLayout alloc] init];
+        flowLayout.itemSize = self.itemSize;
+        flowLayout;
+    });
+    
+
     self.collectionView = ({
-        
-        UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-        layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        layout.minimumLineSpacing = 0;
-        layout.minimumInteritemSpacing = 0;
-        layout.sectionInset = UIEdgeInsetsZero;
-        
-        UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+
+        UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:self.flowLayout];
         collectionView.backgroundColor = [UIColor whiteColor];
         collectionView.showsVerticalScrollIndicator = NO;
         collectionView.showsHorizontalScrollIndicator = NO;
         collectionView.pagingEnabled = YES;
-        
-        [collectionView registerClass:[YANMenuSection class] forCellWithReuseIdentifier:[YANMenuSection identifier]];
-        
+
+        [collectionView registerClass:[YANMenuItem class] forCellWithReuseIdentifier:[YANMenuItem identifier]];
+
         collectionView.delegate = self;
         collectionView.dataSource = self;
-        
+
         collectionView;
-        
+
     });
-    
+
     self.pageControl = ({
         UIPageControl * pageControl = [[UIPageControl alloc] initWithFrame:CGRectZero];
         pageControl.currentPageIndicatorTintColor = [UIColor darkTextColor];
         pageControl.pageIndicatorTintColor =  [UIColor groupTableViewBackgroundColor];
+        pageControl.numberOfPages = self.totalPages;
+        pageControl.currentPage = 0;
         [pageControl addTarget:self action:@selector(pageTurn:) forControlEvents:UIControlEventValueChanged];
         pageControl;
     });
     
+    self.header = ({
+        UIView *header = [[UIView alloc] init];
+        header.backgroundColor = [UIColor whiteColor];
+        header.clipsToBounds = YES;
+        header;
+    });
+
     [self addSubview:self.collectionView];
     [self addSubview:self.pageControl];
+    [self addSubview:self.header];
     
+    [self layoutHeaderInSection:0];
+
 }
 - (void)layoutSubviews{
-    
+
     [super layoutSubviews];
     
+    //页眉
+    [self updateHeaderConstraints];
+    
+    //分页器
     [self.pageControl mas_updateConstraints:^(MASConstraintMaker *make) {
         make.left.bottom.right.mas_equalTo(self);
-        make.height.mas_equalTo(kPageControlHeight);
+        make.height.mas_equalTo(self.pageControlHeight);
     }];
-    
+    //视图
     [self.collectionView mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.top.left.right.mas_equalTo(self);
+        make.left.right.mas_equalTo(self);
         make.bottom.mas_equalTo(self.pageControl.mas_top);
+        make.top.mas_equalTo(self.header.mas_bottom);
     }];
 }
-#pragma mark - UICollectionViewDelegateFlowLayout
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
+
+/** 页眉约束 */
+- (void)updateHeaderConstraints{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(scrollMenu:headerInSection:)]) {
+        
+        
+        [self.header mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.left.top.right.mas_equalTo(self);
+            make.height.mas_equalTo(self.headerHeight);
+        }];
+        
+    }else{
+        
+        //页眉
+        [self.header mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.left.top.right.mas_equalTo(self);
+            make.height.mas_equalTo(0);
+        }];
+    }
+}
+/** 页眉设置 */
+- (void)layoutHeaderInSection:(NSUInteger)section{
     
-    if (self.delegate && [self.delegate respondsToSelector:@selector(numberOfRowsForEachPageInScrollMenu:)]) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(scrollMenu:headerInSection:)]) {
         
-        NSUInteger rows = [self.delegate numberOfRowsForEachPageInScrollMenu:self];
+        [self.header.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
         
-        CGFloat height = (CGRectGetHeight(self.frame) - kPageControlHeight)/rows;
+        UIView* view =  [self.delegate scrollMenu:self headerInSection:section];
         
-        return CGSizeMake(CGRectGetWidth(self.frame), height);
+        view ? [self.header addSubview:view] : nil;
         
     }
-    return CGSizeZero;
+    
+}
+#pragma mark - Getter&Setter
+- (NSMutableArray<NSNumber *> *)offsetArray{
+    if (_offsetArray == nil) {
+        _offsetArray = [NSMutableArray array];
+    }
+    return _offsetArray;
+}
+- (void)setBackgroundColor:(UIColor *)backgroundColor{
+    
+    [super setBackgroundColor:backgroundColor];
+    
+    self.collectionView.backgroundColor = backgroundColor;
+    self.header.backgroundColor = backgroundColor;
+    
+}
+- (void)setCurrentPageIndicatorTintColor:(UIColor *)currentPageIndicatorTintColor{
+
+    _currentPageIndicatorTintColor = currentPageIndicatorTintColor;
+
+    if (self.pageControl) {
+
+        self.pageControl.currentPageIndicatorTintColor = currentPageIndicatorTintColor;
+    }
+}
+- (void)setPageIndicatorTintColor:(UIColor *)pageIndicatorTintColor{
+
+    _pageIndicatorTintColor = pageIndicatorTintColor;
+
+    if (self.pageControl) {
+
+        self.pageControl.pageIndicatorTintColor = pageIndicatorTintColor;
+    }
+}
+/** 页眉高度 */
+- (CGFloat)headerHeight{
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(heightOfHeaderInScrollMenu:)]) {
+        
+        return [self.delegate heightOfHeaderInScrollMenu:self];
+    }
+    
+    return kScale(20);
+}
+/** 获取分页器高度 */
+- (CGFloat)pageControlHeight{
+ 
+    if (self.delegate && [self.delegate respondsToSelector:@selector(heightOfPageControlInScrollMenu:)]) {
+        
+        return [self.delegate heightOfPageControlInScrollMenu:self];
+    }
+    
+    return kScale(15);
+}
+/** 获取单元格尺寸 */
+- (CGSize)itemSize{
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(itemSizeOfScrollMenu:)]) {
+        
+        return  [self.delegate itemSizeOfScrollMenu:self];
+        
+    }
+    
+    return CGSizeMake(kScale(40), kScale(70));
+    
+}
+/** 获取分页器总页数 */
+- (NSUInteger)totalPages{
+    
+    //视图尺寸
+    CGFloat width = self.originFrame.size.width;
+    CGFloat height = self.originFrame.size.height - self.pageControlHeight - self.headerHeight;
+    //行列最大的单元格数量
+    NSInteger xCount = width/self.itemSize.width;
+    NSInteger yCount = height/self.itemSize.height;
+    
+    //单页的数量
+    NSInteger allCount = xCount * yCount;
+    
+    //清除上次位移数据
+    [self.offsetArray removeAllObjects];
+    
+    //总页数
+    NSUInteger page = 0;
+    for (NSUInteger idx = 0; idx < [self getNumberOfSections]; idx ++) {
+        NSUInteger count = [self getNumberOfItemsInSection:idx];
+        NSUInteger pageRe = (count%allCount == 0) ?  (count/allCount) :  (count/allCount)+1;
+        page += pageRe;
+        
+        //记录section的最大位移量
+        [self.offsetArray addObject:@(page * width)];
+    }
+    
+    return page;
+}
+/** 获取分区个数 */
+- (NSUInteger)getNumberOfSections{
+    
+    if (self.dataSource && [self.dataSource respondsToSelector:@selector(numberOfSectionsInScrollMenu:)]) {
+        
+        return [self.dataSource numberOfSectionsInScrollMenu:self];
+    }
+    
+    return 1;
+}
+/** 获取单个分区的单元格数 */
+- (NSUInteger)getNumberOfItemsInSection:(NSInteger)section{
+    
+    if (self.dataSource && [self.dataSource respondsToSelector:@selector(scrollMenu:numberOfItemsInSection:)]) {
+        
+        return [self.dataSource scrollMenu:self numberOfItemsInSection:section];
+    }
+    
+    return 0;
+    
+}
+/** 获取多余的高度 */
+- (CGFloat)getRedundantHeight{
+    
+    //视图尺寸
+    CGFloat width = self.originFrame.size.width;
+    CGFloat height = self.originFrame.size.height - self.pageControlHeight - self.headerHeight;
+    //行列最大的单元格数量
+    NSInteger xCount = width/self.itemSize.width;
+    NSInteger yCount = height/self.itemSize.height;
+    
+    //单页的数量
+    NSInteger allCount = xCount * yCount;
+    
+    //最小高度
+    CGFloat lineNumber = 0;
+    
+    for (NSUInteger idx = 0; idx < [self getNumberOfSections]; idx ++) {
+        NSUInteger count = [self getNumberOfItemsInSection:idx];
+        
+        if (count/allCount >= 1.f) {
+            
+            return 0;
+            
+        }else{
+            
+            NSInteger number = (count%xCount == 0) ?  (count/xCount) :  (count/xCount)+1;
+            
+            if (number > lineNumber) {
+                lineNumber = number;
+            }
+        }
+        
+    }
+    
+    CGFloat redundantHeight = (yCount - lineNumber)*self.itemSize.height;
+    
+    return redundantHeight;
+    
+}
+#pragma mark - PageCotrolTurn
+- (void)pageTurn:(UIPageControl*)sender{
+
+    CGSize viewSize = self.collectionView.frame.size;
+    CGRect rect = CGRectMake(sender.currentPage * viewSize.width, 0, viewSize.width, viewSize.height);
+    [self.collectionView scrollRectToVisible:rect animated:YES];
+        
+    [self changeHeaderInMenuContentOffset:rect.origin.x];
+
+}
+#pragma mark - ScrollViewDelegate
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+
+    CGPoint offset = scrollView.contentOffset;
+    CGRect bounds = scrollView.frame;
+    [self.pageControl setCurrentPage:offset.x / bounds.size.width];
+    
+    
+    [self changeHeaderInMenuContentOffset:offset.x];
+    
+}
+#pragma mark - Section
+- (void)changeHeaderInMenuContentOffset:(CGFloat)offset{
+    
+    for (int idx = 0; idx < self.offsetArray.count; idx ++) {
+        
+        CGFloat currentOffset = offset + self.collectionView.frame.size.width;
+        CGFloat theOffset = [self.offsetArray[idx] floatValue];
+        
+        
+        if (currentOffset <= theOffset) {
+            
+            [self layoutHeaderInSection:idx];
+            
+            return;
+        }
+        
+    }
 }
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
     
-    if (self.delegate && [self.delegate respondsToSelector:@selector(numberOfItemsForEachRowInScrollMenu:)] && [self.delegate respondsToSelector:@selector(numberOfMenusInScrollMenu:)]) {
+    return [self getNumberOfItemsInSection:section];
+}
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
+    
+    return [self getNumberOfSections];
+}
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+    
+    YANMenuItem *item = [collectionView dequeueReusableCellWithReuseIdentifier:[YANMenuItem identifier] forIndexPath:indexPath];
+    if (self.dataSource && [self.dataSource respondsToSelector:@selector(scrollMenu:objectAtIndexPath:)]) {
         
-        NSUInteger total = [self.delegate numberOfMenusInScrollMenu:self];
+        id<YANObjectProtocol> object = [self.dataSource scrollMenu:self objectAtIndexPath:indexPath];
         
-        NSUInteger items = [self.delegate numberOfItemsForEachRowInScrollMenu:self];
-        
-        CGFloat rows = (CGFloat)total * 1.f /items;
-        
-        if ([self.delegate respondsToSelector:@selector(numberOfRowsForEachPageInScrollMenu:)]) {
-            
-            NSUInteger rows = [self.delegate numberOfRowsForEachPageInScrollMenu:self];
-            
-            NSUInteger numberOfPages = ceil(total*1.f/(rows * items));
-            
-            self.pageControl.numberOfPages = numberOfPages;
-            self.pageControl.hidden = numberOfPages < 2;
-            
-        }
-        
-        return ceil(rows);
+        [item customizeItemWithObject:object];
     }
     
-    return 0;
-    
+    return item;
 }
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView  cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath{
-    
-    YANMenuSection *section = [collectionView dequeueReusableCellWithReuseIdentifier:[YANMenuSection identifier] forIndexPath:indexPath];
-    section.section = indexPath.row;
-    section.delegate = self;
-    return section;
-}
-#pragma mark - YANMenuSectionProtocol
-- (CGSize)sizeOfItemsInMenuSection:(YANMenuSection *)menuSection{
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(numberOfRowsForEachPageInScrollMenu:)] && [self.delegate respondsToSelector:@selector(numberOfItemsForEachRowInScrollMenu:)]) {
-        
-        NSUInteger rows = [self.delegate numberOfRowsForEachPageInScrollMenu:self];
-        
-        CGFloat height = (CGRectGetHeight(self.frame) - kPageControlHeight)/rows;
-        
-        NSUInteger items = [self.delegate numberOfItemsForEachRowInScrollMenu:self];
-        
-        CGFloat width =  CGRectGetWidth(self.frame)/items;
-        
-        return CGSizeMake(width, height);
-        
-    }
-    
-    return CGSizeZero;
-    
-}
-- (NSUInteger)numberOfItemsInMenuSection:(YANMenuSection *)menuSection{
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(numberOfMenusInScrollMenu:)] && [self.delegate respondsToSelector:@selector(numberOfRowsForEachPageInScrollMenu:)]) {
-        
-        NSUInteger total = [self.delegate numberOfMenusInScrollMenu:self];
-        
-        NSUInteger items = [self.delegate numberOfItemsForEachRowInScrollMenu:self];
-        
-        NSUInteger number = total - items * menuSection.section;
-    
-        
-        return MIN(number, items);
-      
-    }
-    
-    return 0;
-}
-- (id<YANMenuObject>)menuSection:(YANMenuSection *)menuSection objectAtIndexPath:(NSIndexPath *)indexPath{
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(scrollMenu:objectAtIndexPath:)]) {
-        
-        NSIndexPath *idx = [NSIndexPath indexPathForRow:indexPath.row inSection:menuSection.section];
-        
-        return [self.delegate scrollMenu:self objectAtIndexPath:idx];
-    }
-    
-    return nil;
-}
-- (void)menuSection:(YANMenuSection *)menuSection didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+#pragma mark - UICollectionViewDelegate
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(scrollMenu:didSelectItemAtIndexPath:)]) {
         
-        NSIndexPath *idx = [NSIndexPath indexPathForRow:indexPath.row inSection:menuSection.section];
-        
-        [self.delegate scrollMenu:self didSelectItemAtIndexPath:idx];
+        [self.delegate scrollMenu:self didSelectItemAtIndexPath:indexPath];
     }
-    
-}
-- (YANEdgeInsets)edgeInsetsOfItemMenuSection:(YANMenuSection *)menuSection{
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(edgeInsetsOfItemInScrollMenu:)]) {
-        
-        return [self.delegate edgeInsetsOfItemInScrollMenu:self];
-    }
-    
-    return YANEdgeInsetsMake(kScale(5), 0, kScale(5), 0, kScale(5));
-}
-#pragma mark - ScrollViewDelegate
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
-    
-    CGPoint offset = scrollView.contentOffset;
-    CGRect bounds = scrollView.frame;
-    [self.pageControl setCurrentPage:offset.x / bounds.size.width];
-}
-#pragma mark - PageCotrolTurn
-- (void)pageTurn:(UIPageControl*)sender{
-    
-    CGSize viewSize = self.collectionView.frame.size;
-    CGRect rect = CGRectMake(sender.currentPage * viewSize.width, 0, viewSize.width, viewSize.height);
-    [self.collectionView scrollRectToVisible:rect animated:YES];
     
 }
 #pragma mark - Public
+- (void)updateFrame{
+    
+    CGRect frame = self.originFrame;
+    
+    frame.size.height -= [self getRedundantHeight];
+    
+    self.frame = frame;
+    
+}
 - (void)reloadData{
     
-    if (self.collectionView) {
-        
-        [self.collectionView reloadData];
-        
-    }
+    self.flowLayout.itemSize = self.itemSize;
+    
+    [self updateFrame];
+    
+    self.pageControl.hidden = (self.totalPages == 1);
+    
+    self.pageControl.numberOfPages = self.totalPages;
+    
+    [self.collectionView reloadData];
+    
+    [self changeHeaderInMenuContentOffset:self.pageControl.currentPage * self.collectionView.frame.size.width];
 }
 
 
-
 @end
+

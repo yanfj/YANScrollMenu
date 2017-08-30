@@ -8,22 +8,34 @@
 
 #import "TableViewController.h"
 #import "DataSource.h"
+#import <Masonry.h>
 
 
-#define ItemHeight 90
+
+
+
 #define IMG(name)           [UIImage imageNamed:name]
 
-@interface TableViewController ()<YANScrollMenuProtocol>{
-    
-    NSInteger row;
-    NSInteger item;
+@interface TableViewController ()<YANScrollMenuDelegate,YANScrollMenuDataSource>
+{
+    BOOL _showHeader;
 }
-
+/**
+ *  allDataSource
+ */
+@property (nonatomic, strong) NSMutableArray<DataSource *> *allDataSource;
+/**
+ * 菜单
+ */
 @property (nonatomic, strong) YANScrollMenu *menu;
 /**
  *  dataSource
  */
 @property (nonatomic, strong) NSMutableArray<DataSource *> *dataSource;
+/**
+ *  分区数
+ */
+@property (nonatomic, assign) NSUInteger number;
 @end
 
 @implementation TableViewController
@@ -33,11 +45,14 @@
     }
     return _dataSource;
 }
+- (NSMutableArray<DataSource *> *)allDataSource{
+    if (_allDataSource == nil) {
+        _allDataSource = [NSMutableArray array];
+    }
+    return _allDataSource;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    row = 0;
-    item = 0;
     
     [self prepareUI];
     
@@ -48,7 +63,7 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            [self reload:self.navigationItem.rightBarButtonItem];
+            [self.menu reloadData];
             
         });
     });
@@ -58,9 +73,12 @@
 #pragma mark - Prepare UI
 - (void)prepareUI{
     
-    self.menu = [[YANScrollMenu alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, ItemHeight*row + kPageControlHeight)];
+    self.number = 1;
+    
+    _showHeader = YES;
+    
+    self.menu = [[YANScrollMenu alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width,kScale(240)) delegate:self];
     self.menu.currentPageIndicatorTintColor = [UIColor colorWithRed:107/255.f green:191/255.f blue:255/255.f alpha:1.0];
-    self.menu.delegate = self;
     self.tableView.tableHeaderView = self.menu;
     self.tableView.tableFooterView = [UIView new];
     
@@ -104,99 +122,116 @@
     for (NSUInteger idx = 0; idx< images.count; idx ++) {
         
         DataSource *object = [[DataSource alloc] init];
-        object.text = titles[idx];
-        object.image = images[idx];
-        object.placeholderImage = IMG(@"placeholder");
+        object.itemDescription = titles[idx];
+        object.itemImage = images[idx];
+        object.itemPlaceholder = IMG(@"placeholder");
         
-        [self.dataSource addObject:object];
+        [self.allDataSource addObject:object];
         
     }
+    
+    [self.dataSource addObjectsFromArray:self.allDataSource];
     
     
 }
 #pragma mark - YANScrollMenuProtocol
-- (NSUInteger)numberOfRowsForEachPageInScrollMenu:(YANScrollMenu *)scrollMenu{
+- (NSUInteger)numberOfSectionsInScrollMenu:(YANScrollMenu *)menu{
     
-    return row;
+    return self.number;
 }
-- (NSUInteger)numberOfItemsForEachRowInScrollMenu:(YANScrollMenu *)scrollMenu{
-    
-    return item;
-}
-- (NSUInteger)numberOfMenusInScrollMenu:(YANScrollMenu *)scrollMenu{
+- (NSUInteger)scrollMenu:(YANScrollMenu *)menu numberOfItemsInSection:(NSInteger)section{
     
     return self.dataSource.count;
 }
-- (id<YANMenuObject>)scrollMenu:(YANScrollMenu *)scrollMenu objectAtIndexPath:(NSIndexPath *)indexPath{
+- (id<YANObjectProtocol>)scrollMenu:(YANScrollMenu *)scrollMenu objectAtIndexPath:(NSIndexPath *)indexPath{
     
-    NSUInteger idx = indexPath.section * item + indexPath.row;
-    
-    return self.dataSource[idx];
+    return self.dataSource[indexPath.item];
 }
-
-- (void)scrollMenu:(YANScrollMenu *)scrollMenu didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+- (CGSize)itemSizeOfScrollMenu:(YANScrollMenu *)menu{
     
-    NSUInteger idx = indexPath.section * item + indexPath.row;
+    return CGSizeMake(kScale(75), kScale(90));
+}
+/** 如果不要页眉，不用遵守此协议  */
+- (UIView *)scrollMenu:(YANScrollMenu *)menu headerInSection:(NSUInteger)section{
     
-    NSString *tips = [NSString stringWithFormat:@"IndexPath: [ %ld - %ld ]\nTitle:   %@",indexPath.section,indexPath.row,self.dataSource[idx].text];
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Tips" message:tips preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    if (_showHeader) {
         
-        [alert dismissViewControllerAnimated:YES completion:nil];
-    }];
-    [alert addAction:action];
-    [self.navigationController presentViewController:alert animated:YES completion:nil];
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, kScale(30))];
+        view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        
+        UILabel *label = [[UILabel alloc] init];
+        label.font = [UIFont boldSystemFontOfSize:kScale(17)];
+        label.text = [NSString stringWithFormat:@"--  SECTION %ld  --",section];
+        [view addSubview:label];
+        [label mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.mas_equalTo(view);
+        }];
+        
+        switch (section%3) {
+            case 0:
+                label.textColor = [UIColor greenColor];
+                break;
+            case 1:
+                label.textColor = [UIColor orangeColor];
+                break;
+            case 2:
+                label.textColor = [UIColor blueColor];
+                break;
+            default:
+                break;
+        }
+        
+        return view;
+    }
+    
+    return nil;
+
 }
-- (YANEdgeInsets)edgeInsetsOfItemInScrollMenu:(YANScrollMenu *)scrollMenu{
+- (CGFloat)heightOfHeaderInScrollMenu:(YANScrollMenu *)menu{
     
-    return YANEdgeInsetsMake(kScale(10), 0, kScale(5), 0, kScale(5));
-}
-- (IBAction)reload:(id)sender {
+    return   _showHeader ? kScale(30) : 0;
     
-    self.tableView.tableHeaderView = nil;
-    
-    CGRect frame = self.menu.frame;
-    frame.size.height = row * ItemHeight + kPageControlHeight;
-    self.menu.frame = frame;
-    
-    self.tableView.tableHeaderView = self.menu;
-    
-    [self.menu reloadData];
 }
 #pragma mark - TableView Delegate & DataSource
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     switch (indexPath.row) {
-        case 0:{
-            row = 1;
-            item = 5;
-        }
+        case 0:
+            
+            [self.dataSource addObjectsFromArray:[self.allDataSource subarrayWithRange:NSMakeRange(arc4random()%8 , 5)]];
+
             break;
-        case 1:{
-            row = 2;
-            item = 4;
-        }
+        case 1:
+            self.dataSource.count > 4 ?  [self.dataSource removeObjectsInRange:NSMakeRange(0, 4)] : nil;
             break;
         case 2:{
-            row = 2;
-            item = 5;
+            if (self.number <= 5) {
+                
+                self.number ++;
+            }
         }
             break;
         case 3:{
-            row = 3;
-            item = 4;
+            if (self.number >= 1) {
+                
+                self.number --;
+            }
         }
             break;
-        case 4:{
-            row = 3;
-            item = 5;
-        }
+        case 4:
+            _showHeader = !_showHeader;
             break;
         default:
             break;
     }
+    
+    self.tableView.tableHeaderView = nil;
+    
+    [self.menu reloadData];
+    
+    self.tableView.tableHeaderView = self.menu;
 }
-
 
 @end
