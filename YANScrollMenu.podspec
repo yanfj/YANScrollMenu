@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "YANScrollMenu"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "简单易用的滑动菜单"
 
   # This description is used to generate tags and improve search results.
@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
                    类似美团、大众点评等首页的滑动菜单，具有更好的拓展性
                    DESC
 
-  s.homepage     = "https://github.com/yanff/YANScrollMenu"
+  s.homepage     = "https://github.com/yanfj/YANScrollMenu"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -53,7 +53,7 @@ Pod::Spec.new do |s|
   #  profile URL.
   #
 
-  s.author             = { "yanff" => "15820480109@163.com" }
+  s.author             = { "yanfj" => "yanff.us@gmail.com" }
   # Or just: s.author    = "yanff"
   # s.authors            = { "yanff" => "15820480109@163.com" }
   # s.social_media_url   = "http://twitter.com/yanff"
@@ -80,7 +80,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/yanff/YANScrollMenu.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/yanfj/YANScrollMenu.git", :tag => "#{s.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #

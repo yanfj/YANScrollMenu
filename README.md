@@ -15,7 +15,7 @@
 **`YANScrollMenu` is available via [Cocoapods](http://cocoapods.org/), add this line in your podfile :**
 
 ```
-pod 'YANScrollMenu', '~> 1.0.0'
+pod 'YANScrollMenu', '~> 1.0.1'
 ```
 ## Usage
 
@@ -93,7 +93,7 @@ self.tableView.tableHeaderView = self.menu;
 
 ## Release Notes
 
-
+* **V 1.0.1**    The repository  has been changed
 * **V 1.0.0**    The framework has been refactored
 * **V 0.9.1**    Fix some bug and optimize the code
 * **V 0.9.0**    The first version
