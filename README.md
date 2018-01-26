@@ -91,12 +91,6 @@ self.tableView.tableHeaderView = self.menu;
 **YANScrollMenu depend on  `SDWebImage` and  `Masonry`.**
 **Notes** : When the version of  `SDWebImage` large than `3.8.2` , gif will not be supported.
 
-## Release Notes
-
-* **V 1.0.1**    The repository  has been changed
-* **V 1.0.0**    The framework has been refactored
-* **V 0.9.1**    Fix some bug and optimize the code
-* **V 0.9.0**    The first version
 
 ## License
 
